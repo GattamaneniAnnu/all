@@ -1,0 +1,174 @@
+ssh-keygen
+two enters
+pwd
+cd .ssh/
+ls -ltr
+cat id_rsa ---> copy this key 
+hostname is my ip address inet--> try if not go with remote user ip_address
+
+
+in black terminal -->
+cd target/
+pwd ---> copythis wait
+source files- **/*.war
+
+now in remote directory -->
+in terminal cd/opt/
+pwd
+cd apache-tomcat-8.5.50/webapps/
+
+/apache-tomcat-8.5.50/webapps/ ----> in the remote directory also in the configure system step
+
+
+
+
+
+
+
+
+
+
+
+
+#!/bin/bash
+# Make this script executable with chmod +x script.sh
+
+echo "Welcome to File Manipulation"
+echo "Enter a file name:"
+read filename
+echo "Creating file..."
+touch "$filename"
+echo "File '$filename' created successfully!"
+
+# Main menu loop
+while true; do
+  echo "1. View File - V"
+  echo "2. Update Filename - U"
+  echo "3. Insert Text - I"
+  echo "4. Search - S"
+  echo "5. Delete File - D"
+  echo "6. Exit - E"
+  echo "Enter your choice:"
+  read choice
+ 
+  case "$choice" in
+    "v"|"V")
+      if [[ -f $filename ]]; then
+        cat "$filename"
+      else
+        echo "File '$filename' does not exist."
+      fi
+      ;;
+     
+    "u"|"U")
+      echo "Enter new filename:"
+      read newfile
+      if mv "$filename" "$newfile"; then
+        filename="$newfile"
+        echo "Filename updated to '$filename'."
+      else
+        echo "Failed to rename the file."
+      fi
+      ;;
+     
+    "i"|"I")
+      echo "Enter text to insert:"
+      read text
+      echo "$text" >> "$filename"
+      echo "Text inserted into '$filename'."
+      ;;
+     
+    "s"|"S")
+      echo "Enter text to search for:"
+      read searchText
+      if grep -q "$searchText" "$filename"; then
+        echo "Text '$searchText' found in '$filename'."
+      else
+        echo "Text '$searchText' not found."
+      fi
+      ;;
+     
+    "d"|"D")
+      rm "$filename" && echo "File '$filename' deleted." || echo "File does not exist."
+      break
+      ;;
+     
+    "e"|"E")
+      echo "Exiting..."
+      break
+      ;;
+     
+    *)
+      echo "Invalid choice. Please try again."
+      ;;
+  esac
+done
+
+# Line, word, and character count section
+echo "Enter the filename for line and word count:"
+read file
+if [[ -f $file ]]; then
+  c=$(wc -c < "$file")
+  w=$(wc -w < "$file")
+  l=$(wc -l < "$file")
+  echo "Number of characters in '$file': $c"
+  echo "Number of words in '$file': $w"
+  echo "Number of lines in '$file': $l"
+else
+  echo "File '$file' does not exist."
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "myapp:latest"  // Specify the image name
+        REPO_URL = 'https://github.com/your-username/my_app.git' // Your repo URL
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git url: "${REPO_URL}", branch: 'main'  // Clone the repository
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh 'docker build -t ${DOCKER_IMAGE} .'
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Stop and remove the container if it already exists
+                    sh 'docker rm -f myapp || true'
+
+                    // Run the container
+                    sh 'docker run -d -p 5000:5000 --name myapp ${DOCKER_IMAGE}'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed.'
+        }
+    }
+}
